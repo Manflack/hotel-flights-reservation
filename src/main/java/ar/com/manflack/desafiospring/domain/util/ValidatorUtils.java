@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ar.com.manflack.desafiospring.app.enums.RoomTypesEnum;
 import ar.com.manflack.desafiospring.domain.exception.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,5 +83,14 @@ public class ValidatorUtils
         Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailStr);
         if (!matcher.find())
             throw new EmailNotValidException();
+    }
+
+    public static void validateTypeRoom(String type, Integer amountOfPeople) throws RoomTypeNotValidException
+    {
+        RoomTypesEnum roomEnum = RoomTypesEnum.returnRoomTypeGivenAmountPeople(amountOfPeople);
+
+        if(roomEnum == null || roomEnum.getType().equals(type.toLowerCase()))
+            throw new RoomTypeNotValidException();
+
     }
 }

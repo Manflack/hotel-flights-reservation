@@ -1,6 +1,7 @@
 package ar.com.manflack.desafiospring.app.rest.response;
 
 import ar.com.manflack.desafiospring.app.dto.BookingDTO;
+import ar.com.manflack.desafiospring.app.dto.StatusDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -13,4 +14,5 @@ public class ReservationResponse
     private Double interest;
     private Double total;
     private BookingDTO booking;
+    private StatusDTO statusCode;
 }

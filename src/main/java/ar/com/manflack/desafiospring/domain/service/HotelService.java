@@ -9,10 +9,11 @@ import ar.com.manflack.desafiospring.domain.exception.*;
 
 public interface HotelService
 {
-    List<HotelDTO> getAllHotels(String dateFrom, String dateTo, String destination) throws DateNotValidException;
+    List<HotelDTO> getAllHotels(String dateFrom, String dateTo, String destination)
+            throws DateNotValidException, InvalidLocationException;
 
     ReservationResponse makeReservation(String username, BookingDTO bookingDTO)
             throws DateNotValidException, NoRoomAvailableException, EmailNotValidException, InvalidCardDuesException,
-            CardNotProvidedException;
+            CardNotProvidedException, InvalidLocationException, ReservationNotValidException, RoomTypeNotValidException;
 
 }

@@ -31,9 +31,12 @@ public class HotelServiceImpl implements HotelService
     private HotelRepository hotelRepository;
 
     @Override
-    public List<HotelDTO> getAllHotels(String dateFrom, String dateTo, String destination) throws DateNotValidException
+    public List<HotelDTO> getAllHotels(String dateFrom, String dateTo, String destination)
+            throws DateNotValidException, InvalidLocationException
     {
         List<HotelDTO> hotelList = hotelRepository.getAll();
+        if (StringUtils.isNotBlank(destination))
+            validateDestinationInDatabaseAvoidCall(destination, hotelList);
         Stream<HotelDTO> hotelListStream = hotelList.stream();
 
         if (StringUtils.isNotBlank(dateFrom) || StringUtils.isNotBlank(dateTo))
@@ -69,12 +72,19 @@ public class HotelServiceImpl implements HotelService
     @Override
     public ReservationResponse makeReservation(String username, BookingDTO bookingDTO)
             throws DateNotValidException, NoRoomAvailableException, EmailNotValidException, InvalidCardDuesException,
-            CardNotProvidedException
+            CardNotProvidedException, InvalidLocationException, ReservationNotValidException, RoomTypeNotValidException
     {
         ValidatorUtils.validateEmail(username);
 
+        if (bookingDTO == null || bookingDTO.getPeople() == null)
+            throw new ReservationNotValidException();
+
         if (bookingDTO.getPaymentMethod() == null)
             throw new CardNotProvidedException();
+
+        ValidatorUtils.validateTypeRoom(bookingDTO.getRoomType(), bookingDTO.getPeopleAmount());
+        DateUtils.validateSinceAndUntil(bookingDTO.getDateFrom(), bookingDTO.getDateTo());
+        validateDestinationInDatabase(bookingDTO.getDestination());
 
         CardDTO paymentMethod = bookingDTO.getPaymentMethod();
 
@@ -97,10 +107,27 @@ public class HotelServiceImpl implements HotelService
         hotel = hotelRepository.saveAndFlush(hotel);
 
         long daysOfStay = DAYS.between(dateFrom, dateTo);
+        daysOfStay = daysOfStay == 0 ? 1 : daysOfStay;
         double amount = hotel.getPrice() * daysOfStay;
         double interest = CardInterestEnum.returnInterestByCreditDues(paymentMethod.getDues());
         double total = amount + (amount / 100 * interest);
 
-        return new ReservationResponse(username, amount, interest, total, bookingDTO);
+        return new ReservationResponse(username, amount, interest, total, bookingDTO, null);
+    }
+
+    private void validateDestinationInDatabase(String destination) throws InvalidLocationException
+    {
+        List<HotelDTO> hotelList = hotelRepository.getAll();
+        long counter = hotelList.stream().filter(hotel -> hotel.getProvince().equals(destination)).count();
+        if (counter == 0)
+            throw new InvalidLocationException();
+    }
+
+    private void validateDestinationInDatabaseAvoidCall(String destination, List<HotelDTO> hotelList)
+            throws InvalidLocationException
+    {
+        long counter = hotelList.stream().filter(hotel -> hotel.getProvince().equals(destination)).count();
+        if (counter == 0)
+            throw new InvalidLocationException();
     }
 }

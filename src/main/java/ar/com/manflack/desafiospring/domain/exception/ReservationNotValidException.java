@@ -4,6 +4,6 @@ public class ReservationNotValidException extends Exception
 {
     public ReservationNotValidException()
     {
-        super("Reservation isn't valid, check the spell");
+        super("Reservation isn't valid. Please validate all the fields provided.");
     }
 }

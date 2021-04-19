@@ -24,8 +24,8 @@ public enum CardInterestEnum
     {
         for (CardInterestEnum card : CardInterestEnum.values())
         {
-            if(card.dues == dues)
-            return card.interest;
+            if (card.dues == dues)
+                return card.interest;
         }
         throw new InvalidCardDuesException();
     }
