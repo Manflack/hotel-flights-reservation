@@ -9,6 +9,7 @@ import ar.com.manflack.desafiospring.app.dto.*;
 import ar.com.manflack.desafiospring.app.rest.response.HotelReservationResponse;
 import ar.com.manflack.desafiospring.app.rest.response.HotelReservationResponseFixture;
 import ar.com.manflack.desafiospring.domain.exception.*;
+import ar.com.manflack.desafiospring.domain.exception.hotel.HotelCodeNotValidException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.HotelNoRoomAvailableException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.ReservationNotValidException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.HotelRoomTypeNotValidException;
@@ -154,9 +155,9 @@ public class HotelServiceImplTest
 
     @Test
     public void makeReservation_OK()
-            throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException, DateNotValidException,
-            CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
-            HotelNoRoomAvailableException
+            throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException,
+            DateNotValidException, CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
+            HotelNoRoomAvailableException, HotelCodeNotValidException
     {
         when(hotelRepository.findByCodeAndDestinationAndTypeAndBetweenDateFromAndDateToAndIsReserved(any(),
                 any(),
@@ -188,9 +189,9 @@ public class HotelServiceImplTest
 
     @Test
     public void makeReservation_EmailNotValidException_case1()
-            throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException, DateNotValidException,
-            CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
-            HotelNoRoomAvailableException
+            throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException,
+            DateNotValidException, CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
+            HotelNoRoomAvailableException, HotelCodeNotValidException
     {
         exceptionRule.expect(EmailNotValidException.class);
 
@@ -199,9 +200,9 @@ public class HotelServiceImplTest
 
     @Test
     public void makeReservation_EmailNotValidException_case2()
-            throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException, DateNotValidException,
-            CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
-            HotelNoRoomAvailableException
+            throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException,
+            DateNotValidException, CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
+            HotelNoRoomAvailableException, HotelCodeNotValidException
     {
         exceptionRule.expect(EmailNotValidException.class);
 
@@ -210,9 +211,9 @@ public class HotelServiceImplTest
 
     @Test
     public void makeReservation_EmailNotValidException_case3()
-            throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException, DateNotValidException,
-            CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
-            HotelNoRoomAvailableException
+            throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException,
+            DateNotValidException, CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
+            HotelNoRoomAvailableException, HotelCodeNotValidException
     {
         exceptionRule.expect(EmailNotValidException.class);
 
@@ -221,9 +222,9 @@ public class HotelServiceImplTest
 
     @Test
     public void makeReservation_ReservationNotValidException_case1()
-            throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException, DateNotValidException,
-            CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
-            HotelNoRoomAvailableException
+            throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException,
+            DateNotValidException, CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
+            HotelNoRoomAvailableException, HotelCodeNotValidException
     {
         exceptionRule.expect(ReservationNotValidException.class);
 
@@ -232,9 +233,9 @@ public class HotelServiceImplTest
 
     @Test
     public void makeReservation_ReservationNotValidException_case2()
-            throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException, DateNotValidException,
-            CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
-            HotelNoRoomAvailableException
+            throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException,
+            DateNotValidException, CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
+            HotelNoRoomAvailableException, HotelCodeNotValidException
     {
         exceptionRule.expect(ReservationNotValidException.class);
 
@@ -246,9 +247,9 @@ public class HotelServiceImplTest
 
     @Test
     public void makeReservation_CardNotProvidedException_case1()
-            throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException, DateNotValidException,
-            CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
-            HotelNoRoomAvailableException
+            throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException,
+            DateNotValidException, CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
+            HotelNoRoomAvailableException, HotelCodeNotValidException
     {
         exceptionRule.expect(CardNotProvidedException.class);
 

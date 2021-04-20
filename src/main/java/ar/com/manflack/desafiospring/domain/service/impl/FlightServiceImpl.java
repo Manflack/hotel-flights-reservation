@@ -9,11 +9,9 @@ import java.util.stream.Stream;
 import ar.com.manflack.desafiospring.app.dto.CardDTO;
 import ar.com.manflack.desafiospring.app.dto.FlightDTO;
 import ar.com.manflack.desafiospring.app.dto.FlightReservationDTO;
+import ar.com.manflack.desafiospring.app.enums.CardInterestEnum;
 import ar.com.manflack.desafiospring.app.rest.response.FlightReservationResponse;
-import ar.com.manflack.desafiospring.domain.exception.CardNotProvidedException;
-import ar.com.manflack.desafiospring.domain.exception.DateNotValidException;
-import ar.com.manflack.desafiospring.domain.exception.EmailNotValidException;
-import ar.com.manflack.desafiospring.domain.exception.ProvinceNotValidException;
+import ar.com.manflack.desafiospring.domain.exception.*;
 import ar.com.manflack.desafiospring.domain.exception.flight.FlightNotAvailableException;
 import ar.com.manflack.desafiospring.domain.exception.flight.FlightSeatTypeNotValidException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.HotelNoRoomAvailableException;
@@ -25,6 +23,8 @@ import ar.com.manflack.desafiospring.domain.util.ValidatorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
 public class FlightServiceImpl implements FlightService
@@ -90,7 +90,7 @@ public class FlightServiceImpl implements FlightService
     public FlightReservationResponse makeFlightReservation(String username, FlightReservationDTO flightReservation)
             throws EmailNotValidException, ReservationNotValidException, CardNotProvidedException,
             FlightSeatTypeNotValidException, DateNotValidException, ProvinceNotValidException,
-            FlightNotAvailableException
+            FlightNotAvailableException, InvalidCardDuesException
     {
         ValidatorUtils.validateEmail(username);
 
@@ -101,6 +101,8 @@ public class FlightServiceImpl implements FlightService
         if (flightReservation.getPaymentMethod() == null)
             throw new CardNotProvidedException();
 
+        CardDTO paymentMethod = flightReservation.getPaymentMethod();
+
         // validate if the seat type is business or economy
         ValidatorUtils.validateSeatType(flightReservation.getSeatType());
         // validate if dateFrom is before dateTo
@@ -108,12 +110,14 @@ public class FlightServiceImpl implements FlightService
         // validate origin/destination exists against database
         validateProvinceOrigin(flightReservation.getOrigin());
         validateProvinceDestination(flightReservation.getDestination());
+        // validate number of dues given the card
+        ValidatorUtils.validateCard(paymentMethod);
 
-        CardDTO paymentMethod = flightReservation.getPaymentMethod();
-
+        // wrapper the dates
         LocalDate dateFrom = DateUtils.getDateFromString(flightReservation.getDateFrom());
         LocalDate dateTo = DateUtils.getDateFromString(flightReservation.getDateTo());
 
+        // get by filter, simulation of a Repository with JPA
         Optional<FlightDTO> optionalFlight =
                 flightRepository.findByNumberAndOriginAndDestinationAndSeatTypeAndBetweenDepartureDateAndReturnDate(
                         flightReservation.getFlightNumber(),
@@ -127,7 +131,16 @@ public class FlightServiceImpl implements FlightService
         if (!optionalFlight.isPresent())
             throw new FlightNotAvailableException();
 
-        return null;
+        FlightDTO flight = optionalFlight.get();
+
+        // calculate days of stays, amount, interest and total(amount + interest)
+        long daysOfStay = DAYS.between(dateFrom, dateTo);
+        daysOfStay = daysOfStay == 0 ? 1 : daysOfStay;
+        double amount = flight.getPrice() * daysOfStay;
+        double interest = CardInterestEnum.returnInterestByCreditDues(paymentMethod.getDues());
+        double total = amount + (amount / 100 * interest);
+
+        return new FlightReservationResponse(username, amount, interest, total, flightReservation, null);
     }
 
     private void validateProvinceOrigin(String origin) throws ProvinceNotValidException

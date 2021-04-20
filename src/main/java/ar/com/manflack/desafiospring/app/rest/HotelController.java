@@ -4,6 +4,7 @@ import ar.com.manflack.desafiospring.app.dto.StatusDTO;
 import ar.com.manflack.desafiospring.app.rest.request.HotelReservationRequest;
 import ar.com.manflack.desafiospring.app.rest.response.HotelReservationResponse;
 import ar.com.manflack.desafiospring.domain.exception.*;
+import ar.com.manflack.desafiospring.domain.exception.hotel.HotelCodeNotValidException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.HotelNoRoomAvailableException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.HotelRoomTypeNotValidException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.ReservationNotValidException;
@@ -29,9 +30,9 @@ public class HotelController
 
     @PostMapping("/api/v1/booking")
     public ResponseEntity<?> makeHotelReservation(@RequestBody HotelReservationRequest request)
-            throws DateNotValidException, HotelNoRoomAvailableException, EmailNotValidException, InvalidCardDuesException,
-            CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
-            HotelRoomTypeNotValidException
+            throws DateNotValidException, HotelNoRoomAvailableException, EmailNotValidException,
+            InvalidCardDuesException, CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
+            HotelRoomTypeNotValidException, HotelCodeNotValidException
     {
         HotelReservationResponse response = hotelService.makeReservation(request.getUserName(), request.getBooking());
         response.setStatusCode(new StatusDTO(HttpStatus.OK.value(), "El proceso termino satisfactoriamente"));

@@ -3,6 +3,7 @@ package ar.com.manflack.desafiospring.domain.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ar.com.manflack.desafiospring.app.dto.CardDTO;
 import ar.com.manflack.desafiospring.app.enums.RoomTypesEnum;
 import ar.com.manflack.desafiospring.domain.exception.*;
 import ar.com.manflack.desafiospring.domain.exception.flight.FlightNumberNotValidException;
@@ -20,10 +21,9 @@ public class ValidatorUtils
     public static void validateHotelWithStringData(String code, String name, String province, String type, String price,
             String availableSince, String availableUntil, String isReserved)
             throws HotelCodeNotValidException, HotelNameNotValidException, ProvinceNotValidException,
-            HotelTypeNotValidException, HotelPriceNotValidException, DateNotValidException,
-            ReservationNotValidException
+            HotelTypeNotValidException, HotelPriceNotValidException, DateNotValidException, ReservationNotValidException
     {
-        validateCode(code);
+        validateHotelCode(code);
         validateName(name);
         validateProvince(province);
         validateType(type);
@@ -35,15 +35,27 @@ public class ValidatorUtils
 
     public static void validateFlightWithStringData(String number, String origin, String destination, String seatType,
             String price, String departureDate, String returnDate)
-            throws FlightNumberNotValidException, ProvinceNotValidException, FlightSeatTypeNotValidException
+            throws FlightNumberNotValidException, ProvinceNotValidException, FlightSeatTypeNotValidException,
+            HotelPriceNotValidException, DateNotValidException
     {
         validateNumber(number);
         validateProvince(origin);
         validateProvince(destination);
         validateSeatType(seatType);
+        validatePrice(price);
+        DateUtils.validateDate(departureDate);
+        DateUtils.validateDate(returnDate);
     }
 
-    private static void validateCode(String code) throws HotelCodeNotValidException
+    // set the definition of a correct card, in this case VISA-MASTER only has 16 numbers
+    public static void validateCard(final CardDTO card) throws InvalidCardDuesException
+    {
+        if ((StringUtils.equalsIgnoreCase(card.getType(), "debit") && card.getDues() != 1)
+                || card.getNumber().replace("-", "").length() != 16)
+            throw new InvalidCardDuesException();
+    }
+
+    public static void validateHotelCode(String code) throws HotelCodeNotValidException
     {
         if (StringUtils.isBlank(code) || code.split("-").length == 1 || code.split("-")[0].length() != 2
                 || code.split("-")[1].length() != 4)

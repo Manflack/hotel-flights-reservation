@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import ar.com.manflack.desafiospring.domain.exception.DateNotValidException;
 import ar.com.manflack.desafiospring.domain.util.DateUtils;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -16,7 +17,9 @@ public class FlightDTO
     private String destination;
     private String seatType;
     private Integer price;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDate departureDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDate returnDate;
 
     public FlightDTO(String number, String origin, String destination, String seatType, String price,

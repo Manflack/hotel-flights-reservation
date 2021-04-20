@@ -6,6 +6,7 @@ import ar.com.manflack.desafiospring.app.dto.HotelDTO;
 import ar.com.manflack.desafiospring.app.rest.response.HotelReservationResponse;
 import ar.com.manflack.desafiospring.app.dto.BookingDTO;
 import ar.com.manflack.desafiospring.domain.exception.*;
+import ar.com.manflack.desafiospring.domain.exception.hotel.HotelCodeNotValidException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.HotelNoRoomAvailableException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.HotelRoomTypeNotValidException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.ReservationNotValidException;
@@ -18,6 +19,6 @@ public interface HotelService
     HotelReservationResponse makeReservation(String username, BookingDTO bookingDTO)
             throws DateNotValidException, HotelNoRoomAvailableException, EmailNotValidException,
             InvalidCardDuesException, CardNotProvidedException, ProvinceNotValidException,
-            HotelRoomTypeNotValidException, ReservationNotValidException;
+            HotelRoomTypeNotValidException, ReservationNotValidException, HotelCodeNotValidException;
 
 }

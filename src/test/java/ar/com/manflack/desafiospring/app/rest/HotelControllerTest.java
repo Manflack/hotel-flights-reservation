@@ -9,6 +9,7 @@ import ar.com.manflack.desafiospring.app.rest.request.HotelReservationRequestFix
 import ar.com.manflack.desafiospring.app.rest.response.HotelReservationResponse;
 import ar.com.manflack.desafiospring.app.rest.response.HotelReservationResponseFixture;
 import ar.com.manflack.desafiospring.domain.exception.*;
+import ar.com.manflack.desafiospring.domain.exception.hotel.HotelCodeNotValidException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.HotelNoRoomAvailableException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.HotelRoomTypeNotValidException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.ReservationNotValidException;
@@ -63,7 +64,7 @@ public class HotelControllerTest
     public void makeReservation_defaultParams_OK()
             throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException,
             DateNotValidException, CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
-            HotelNoRoomAvailableException
+            HotelNoRoomAvailableException, HotelCodeNotValidException
     {
         when(service.makeReservation(any(), any())).thenReturn(HotelReservationResponseFixture.withDefaults());
 

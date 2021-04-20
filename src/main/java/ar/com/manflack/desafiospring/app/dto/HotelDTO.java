@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import ar.com.manflack.desafiospring.domain.exception.DateNotValidException;
 import ar.com.manflack.desafiospring.domain.util.DateUtils;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,9 @@ public class HotelDTO
     private String province;
     private String type;
     private Integer price;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDate availableSince;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDate availableUntil;
     private Boolean isReserved;
 

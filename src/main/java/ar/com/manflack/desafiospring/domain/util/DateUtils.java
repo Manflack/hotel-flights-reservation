@@ -64,6 +64,6 @@ public class DateUtils
     {
         LocalDate localDateFrom = flight.getDepartureDate();
         LocalDate localDateTo = flight.getReturnDate();
-        return localDateFrom.isBefore(since.plusDays(1)) && localDateTo.isAfter(until.minusDays(1));
+        return localDateFrom.isEqual(since) && localDateTo.isEqual(until);
     }
 }

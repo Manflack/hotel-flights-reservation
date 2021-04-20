@@ -12,6 +12,7 @@ import ar.com.manflack.desafiospring.app.enums.CardInterestEnum;
 import ar.com.manflack.desafiospring.app.rest.response.HotelReservationResponse;
 import ar.com.manflack.desafiospring.app.dto.BookingDTO;
 import ar.com.manflack.desafiospring.domain.exception.*;
+import ar.com.manflack.desafiospring.domain.exception.hotel.HotelCodeNotValidException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.HotelNoRoomAvailableException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.ReservationNotValidException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.HotelRoomTypeNotValidException;
@@ -79,7 +80,7 @@ public class HotelServiceImpl implements HotelService
     public HotelReservationResponse makeReservation(String username, BookingDTO booking)
             throws DateNotValidException, HotelNoRoomAvailableException, EmailNotValidException,
             InvalidCardDuesException, CardNotProvidedException, ProvinceNotValidException,
-            HotelRoomTypeNotValidException, ReservationNotValidException
+            HotelRoomTypeNotValidException, ReservationNotValidException, HotelCodeNotValidException
     {
         ValidatorUtils.validateEmail(username);
 
@@ -90,14 +91,18 @@ public class HotelServiceImpl implements HotelService
         if (booking.getPaymentMethod() == null)
             throw new CardNotProvidedException();
 
+        CardDTO paymentMethod = booking.getPaymentMethod();
+
         // validate typeRoom given the name of the type and the amount of people
         ValidatorUtils.validateRoomType(booking.getRoomType(), booking.getPeopleAmount());
         // validate if dateFrom is before dateTo
         DateUtils.validateSinceAndUntil(booking.getDateFrom(), booking.getDateTo());
+        // validate hotelCode provided
+        ValidatorUtils.validateHotelCode(booking.getHotelCode());
+        // validate number of dues given the card
+        ValidatorUtils.validateCard(paymentMethod);
         // validate if the destination exists against database
         validateDestinationInDatabase(booking.getDestination());
-
-        CardDTO paymentMethod = booking.getPaymentMethod();
 
         // wrapper the dates
         LocalDate dateFrom = DateUtils.getDateFromString(booking.getDateFrom());

@@ -3,10 +3,7 @@ package ar.com.manflack.desafiospring.app.rest;
 import ar.com.manflack.desafiospring.app.dto.StatusDTO;
 import ar.com.manflack.desafiospring.app.rest.request.FlightReservationRequest;
 import ar.com.manflack.desafiospring.app.rest.response.FlightReservationResponse;
-import ar.com.manflack.desafiospring.domain.exception.CardNotProvidedException;
-import ar.com.manflack.desafiospring.domain.exception.DateNotValidException;
-import ar.com.manflack.desafiospring.domain.exception.EmailNotValidException;
-import ar.com.manflack.desafiospring.domain.exception.ProvinceNotValidException;
+import ar.com.manflack.desafiospring.domain.exception.*;
 import ar.com.manflack.desafiospring.domain.exception.flight.FlightNotAvailableException;
 import ar.com.manflack.desafiospring.domain.exception.flight.FlightSeatTypeNotValidException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.ReservationNotValidException;
@@ -34,7 +31,7 @@ public class FlightController
     public ResponseEntity<?> makeFlightReservation(@RequestBody FlightReservationRequest request)
             throws EmailNotValidException, ReservationNotValidException, CardNotProvidedException,
             FlightSeatTypeNotValidException, DateNotValidException, ProvinceNotValidException,
-            FlightNotAvailableException
+            FlightNotAvailableException, InvalidCardDuesException
     {
         FlightReservationResponse response =
                 flightService.makeFlightReservation(request.getUserName(), request.getFlightReservation());
