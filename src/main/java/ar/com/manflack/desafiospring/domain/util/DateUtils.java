@@ -7,6 +7,8 @@ import java.time.LocalDate;
 
 import javax.annotation.PostConstruct;
 
+import ar.com.manflack.desafiospring.app.dto.FlightDTO;
+import ar.com.manflack.desafiospring.app.dto.HotelDTO;
 import ar.com.manflack.desafiospring.domain.exception.DateNotValidException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -49,5 +51,19 @@ public class DateUtils
         LocalDate until = getDateFromString(untilStr);
         if (since.isAfter(until))
             throw new DateNotValidException("The date of from must be minor that date to");
+    }
+
+    public static boolean validateAvailabilityHotel(HotelDTO hotel, LocalDate since, LocalDate until)
+    {
+        LocalDate localDateFrom = hotel.getAvailableSince();
+        LocalDate localDateTo = hotel.getAvailableUntil();
+        return localDateFrom.isBefore(since.plusDays(1)) && localDateTo.isAfter(until.minusDays(1));
+    }
+
+    public static boolean validateAvailabilityFlight(FlightDTO flight, LocalDate since, LocalDate until)
+    {
+        LocalDate localDateFrom = flight.getDepartureDate();
+        LocalDate localDateTo = flight.getReturnDate();
+        return localDateFrom.isBefore(since.plusDays(1)) && localDateTo.isAfter(until.minusDays(1));
     }
 }

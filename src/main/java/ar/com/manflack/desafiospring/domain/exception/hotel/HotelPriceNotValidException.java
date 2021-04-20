@@ -1,4 +1,4 @@
-package ar.com.manflack.desafiospring.domain.exception;
+package ar.com.manflack.desafiospring.domain.exception.hotel;
 
 public class HotelPriceNotValidException extends Exception
 {

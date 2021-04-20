@@ -1,17 +1,14 @@
 package ar.com.manflack.desafiospring.domain.util;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ar.com.manflack.desafiospring.app.enums.RoomTypesEnum;
 import ar.com.manflack.desafiospring.domain.exception.*;
+import ar.com.manflack.desafiospring.domain.exception.flight.FlightNumberNotValidException;
+import ar.com.manflack.desafiospring.domain.exception.flight.FlightSeatTypeNotValidException;
+import ar.com.manflack.desafiospring.domain.exception.hotel.*;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,8 +19,9 @@ public class ValidatorUtils
 
     public static void validateHotelWithStringData(String code, String name, String province, String type, String price,
             String availableSince, String availableUntil, String isReserved)
-            throws HotelCodeNotValidException, HotelNameNotValidException, HotelProvinceNotValidException,
-            HotelTypeNotValidException, HotelPriceNotValidException, DateNotValidException, ReservationNotValidException
+            throws HotelCodeNotValidException, HotelNameNotValidException, ProvinceNotValidException,
+            HotelTypeNotValidException, HotelPriceNotValidException, DateNotValidException,
+            HotelReservationNotValidException
     {
         validateCode(code);
         validateName(name);
@@ -33,6 +31,16 @@ public class ValidatorUtils
         DateUtils.validateDate(availableSince);
         DateUtils.validateDate(availableUntil);
         validateIsReserved(isReserved);
+    }
+
+    public static void validateFlightWithStringData(String number, String origin, String destination, String seatType,
+            String price, String departureDate, String returnDate)
+            throws FlightNumberNotValidException, ProvinceNotValidException, FlightSeatTypeNotValidException
+    {
+        validateNumber(number);
+        validateProvince(origin);
+        validateProvince(destination);
+        validateSeatType(seatType);
     }
 
     private static void validateCode(String code) throws HotelCodeNotValidException
@@ -49,10 +57,10 @@ public class ValidatorUtils
             throw new HotelNameNotValidException();
     }
 
-    private static void validateProvince(String province) throws HotelProvinceNotValidException
+    private static void validateProvince(String province) throws ProvinceNotValidException
     {
         if (StringUtils.isBlank(province))
-            throw new HotelProvinceNotValidException();
+            throw new ProvinceNotValidException();
     }
 
     private static void validateType(String type) throws HotelTypeNotValidException
@@ -72,10 +80,10 @@ public class ValidatorUtils
 
     }
 
-    private static void validateIsReserved(String isReserved) throws ReservationNotValidException
+    private static void validateIsReserved(String isReserved) throws HotelReservationNotValidException
     {
         if (StringUtils.isBlank(isReserved) || !StringUtils.equalsAny(isReserved.toLowerCase(), "no", "si"))
-            throw new ReservationNotValidException();
+            throw new HotelReservationNotValidException();
     }
 
     public static void validateEmail(String emailStr) throws EmailNotValidException
@@ -85,12 +93,27 @@ public class ValidatorUtils
             throw new EmailNotValidException();
     }
 
-    public static void validateTypeRoom(String type, Integer amountOfPeople) throws RoomTypeNotValidException
+    public static void validateTypeRoom(String type, Integer amountOfPeople) throws HotelRoomTypeNotValidException
     {
         RoomTypesEnum roomEnum = RoomTypesEnum.returnRoomTypeGivenAmountPeople(amountOfPeople);
 
-        if(roomEnum == null || roomEnum.getType().equals(type.toLowerCase()))
-            throw new RoomTypeNotValidException();
+        if (roomEnum == null || !roomEnum.getType().equalsIgnoreCase(type))
+            throw new HotelRoomTypeNotValidException();
 
+    }
+
+    private static void validateNumber(String number) throws FlightNumberNotValidException
+    {
+        if (StringUtils.isBlank(number) || number.split("-").length == 1 || number.split("-")[0].length() != 4
+                || number.split("-")[1].length() != 4)
+            throw new FlightNumberNotValidException();
+
+    }
+
+    private static void validateSeatType(String seatType) throws FlightSeatTypeNotValidException
+    {
+        if (StringUtils.isBlank(seatType) || !StringUtils.isAlpha(seatType)
+                || !StringUtils.equalsAnyIgnoreCase(seatType, "economy", "business"))
+            throw new FlightSeatTypeNotValidException();
     }
 }

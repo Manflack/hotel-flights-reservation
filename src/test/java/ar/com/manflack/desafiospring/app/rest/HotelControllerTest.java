@@ -5,36 +5,29 @@ import java.util.List;
 
 import ar.com.manflack.desafiospring.app.dto.HotelDTO;
 import ar.com.manflack.desafiospring.app.dto.HotelDTOFixture;
-import ar.com.manflack.desafiospring.app.rest.request.ReservationRequest;
 import ar.com.manflack.desafiospring.app.rest.request.ReservationRequestFixture;
 import ar.com.manflack.desafiospring.app.rest.response.ReservationResponse;
 import ar.com.manflack.desafiospring.app.rest.response.ReservationResponseFixture;
 import ar.com.manflack.desafiospring.domain.exception.*;
+import ar.com.manflack.desafiospring.domain.exception.hotel.HotelNoRoomAvailableException;
+import ar.com.manflack.desafiospring.domain.exception.hotel.HotelReservationNotValidException;
+import ar.com.manflack.desafiospring.domain.exception.hotel.HotelRoomTypeNotValidException;
 import ar.com.manflack.desafiospring.domain.service.impl.HotelServiceImpl;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -48,7 +41,7 @@ public class HotelControllerTest
     private HotelServiceImpl service;
 
     @Test
-    public void getAllHotels_withoutParams_OK() throws DateNotValidException, InvalidLocationException
+    public void getAllHotels_withoutParams_OK() throws DateNotValidException, ProvinceNotValidException
     {
         List<HotelDTO> hotelList = Arrays.asList(HotelDTOFixture.withDefaults1(), HotelDTOFixture.withDefaults2());
 
@@ -68,12 +61,13 @@ public class HotelControllerTest
 
     @Test
     public void makeReservation_defaultParams_OK()
-            throws RoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException, DateNotValidException,
-            CardNotProvidedException, InvalidLocationException, ReservationNotValidException, NoRoomAvailableException
+            throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException,
+            DateNotValidException, CardNotProvidedException, ProvinceNotValidException,
+            HotelReservationNotValidException, HotelNoRoomAvailableException
     {
         when(service.makeReservation(any(), any())).thenReturn(ReservationResponseFixture.withDefaults());
 
-        ResponseEntity<?> response = controller.makeReservation(ReservationRequestFixture.withDefaults());
+        ResponseEntity<?> response = controller.makeHotelReservation(ReservationRequestFixture.withDefaults());
         assertNotNull(response);
         assertNotNull(response.getBody());
 

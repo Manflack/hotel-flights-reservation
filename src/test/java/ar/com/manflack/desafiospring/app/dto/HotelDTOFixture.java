@@ -29,4 +29,9 @@ public class HotelDTOFixture
                 LocalDate.of(2021, 2, 1),
                 false);
     }
+
+    public static HotelDTO withReservedTrue()
+    {
+        return new HotelDTO(code, name, province, type, price, availableSince, availableUntil, true);
+    }
 }

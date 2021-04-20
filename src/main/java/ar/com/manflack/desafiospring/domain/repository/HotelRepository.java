@@ -6,13 +6,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
-import javax.print.attribute.standard.Destination;
 
 import ar.com.manflack.desafiospring.app.dto.HotelDTO;
-import ar.com.manflack.desafiospring.domain.exception.HotelDataErrorException;
+import ar.com.manflack.desafiospring.domain.exception.InvalidDatabaseSpecification;
+import ar.com.manflack.desafiospring.domain.exception.hotel.HotelDataErrorException;
 import ar.com.manflack.desafiospring.domain.util.DateUtils;
 import ar.com.manflack.desafiospring.domain.util.ValidatorUtils;
 import com.opencsv.CSVReader;
@@ -31,9 +30,15 @@ public class HotelRepository
     @Value("${database.directory:dbHotels.csv}")
     private String PATH_DATABASE;
 
+    @Value("${database.hotels.filename:dbHotels.csv}")
+    private String FILENAME;
+
     @PostConstruct
     private void setup() throws Exception
     {
+        if (StringUtils.isBlank(PATH_DATABASE) || StringUtils.isBlank(FILENAME))
+            throw new InvalidDatabaseSpecification();
+
         List<String[]> localData = readDatabase();
 
         for (int i = 1; i < localData.size(); i++)
@@ -78,13 +83,11 @@ public class HotelRepository
             String destination, String type, LocalDate dateFrom, LocalDate dateTo, Boolean isReserved)
     {
         return storageData.stream()
-                .filter(hotel -> code.equals(hotel.getCode())
-                        && destination.equals(hotel.getProvince())
+                .filter(hotel -> code.equals(hotel.getCode()) && destination.equals(hotel.getProvince())
                         && StringUtils.equalsIgnoreCase(type.toLowerCase(), hotel.getType().toLowerCase())
                         && dateFrom.isAfter(hotel.getAvailableSince().minusDays(1))
                         && dateTo.isBefore(hotel.getAvailableUntil().plusDays(1))
-                        && isReserved.equals(hotel.getIsReserved())
-                )
+                        && isReserved.equals(hotel.getIsReserved()))
                 .findAny();
     }
 
@@ -112,7 +115,7 @@ public class HotelRepository
 
     private List<String[]> readDatabase() throws Exception
     {
-        File fileReader = ResourceUtils.getFile(PATH_DATABASE);
+        File fileReader = ResourceUtils.getFile(PATH_DATABASE + FILENAME);
         CSVReader csvReader = new CSVReader(new FileReader(fileReader));
         List<String[]> list = csvReader.readAll();
         csvReader.close();
