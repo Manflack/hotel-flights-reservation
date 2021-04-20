@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Optional;
 
 import ar.com.manflack.desafiospring.app.dto.*;
-import ar.com.manflack.desafiospring.app.rest.response.ReservationResponse;
-import ar.com.manflack.desafiospring.app.rest.response.ReservationResponseFixture;
+import ar.com.manflack.desafiospring.app.rest.response.HotelReservationResponse;
+import ar.com.manflack.desafiospring.app.rest.response.HotelReservationResponseFixture;
 import ar.com.manflack.desafiospring.domain.exception.*;
 import ar.com.manflack.desafiospring.domain.exception.hotel.HotelNoRoomAvailableException;
-import ar.com.manflack.desafiospring.domain.exception.hotel.HotelReservationNotValidException;
+import ar.com.manflack.desafiospring.domain.exception.hotel.ReservationNotValidException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.HotelRoomTypeNotValidException;
 import ar.com.manflack.desafiospring.domain.repository.HotelRepository;
 import ar.com.manflack.desafiospring.domain.service.impl.HotelServiceImpl;
@@ -155,7 +155,7 @@ public class HotelServiceImplTest
     @Test
     public void makeReservation_OK()
             throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException, DateNotValidException,
-            CardNotProvidedException, ProvinceNotValidException, HotelReservationNotValidException,
+            CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
             HotelNoRoomAvailableException
     {
         when(hotelRepository.findByCodeAndDestinationAndTypeAndBetweenDateFromAndDateToAndIsReserved(any(),
@@ -167,14 +167,14 @@ public class HotelServiceImplTest
         when(hotelRepository.getAll()).thenReturn(Collections.singletonList(HotelDTOFixture.withDefaults1()));
         when(hotelRepository.saveAndFlush(any())).thenReturn(HotelDTOFixture.withReservedTrue());
 
-        ReservationResponse reservationResponse =
+        HotelReservationResponse hotelReservationResponse =
                 service.makeReservation("kujo.jotaro@joestar.com", BookingDTOFixture.withDefaults());
 
-        assertNotNull(reservationResponse);
-        assertNotNull(reservationResponse.getBooking());
-        assertEquals(ReservationResponseFixture.amount, reservationResponse.getAmount());
-        assertEquals(ReservationResponseFixture.interest, reservationResponse.getInterest());
-        assertEquals(ReservationResponseFixture.total, reservationResponse.getTotal());
+        assertNotNull(hotelReservationResponse);
+        assertNotNull(hotelReservationResponse.getBooking());
+        assertEquals(HotelReservationResponseFixture.amount, hotelReservationResponse.getAmount());
+        assertEquals(HotelReservationResponseFixture.interest, hotelReservationResponse.getInterest());
+        assertEquals(HotelReservationResponseFixture.total, hotelReservationResponse.getTotal());
 
         verify(hotelRepository, times(1)).findByCodeAndDestinationAndTypeAndBetweenDateFromAndDateToAndIsReserved(any(),
                 any(),
@@ -189,7 +189,7 @@ public class HotelServiceImplTest
     @Test
     public void makeReservation_EmailNotValidException_case1()
             throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException, DateNotValidException,
-            CardNotProvidedException, ProvinceNotValidException, HotelReservationNotValidException,
+            CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
             HotelNoRoomAvailableException
     {
         exceptionRule.expect(EmailNotValidException.class);
@@ -200,7 +200,7 @@ public class HotelServiceImplTest
     @Test
     public void makeReservation_EmailNotValidException_case2()
             throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException, DateNotValidException,
-            CardNotProvidedException, ProvinceNotValidException, HotelReservationNotValidException,
+            CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
             HotelNoRoomAvailableException
     {
         exceptionRule.expect(EmailNotValidException.class);
@@ -211,7 +211,7 @@ public class HotelServiceImplTest
     @Test
     public void makeReservation_EmailNotValidException_case3()
             throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException, DateNotValidException,
-            CardNotProvidedException, ProvinceNotValidException, HotelReservationNotValidException,
+            CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
             HotelNoRoomAvailableException
     {
         exceptionRule.expect(EmailNotValidException.class);
@@ -222,10 +222,10 @@ public class HotelServiceImplTest
     @Test
     public void makeReservation_ReservationNotValidException_case1()
             throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException, DateNotValidException,
-            CardNotProvidedException, ProvinceNotValidException, HotelReservationNotValidException,
+            CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
             HotelNoRoomAvailableException
     {
-        exceptionRule.expect(HotelReservationNotValidException.class);
+        exceptionRule.expect(ReservationNotValidException.class);
 
         service.makeReservation("kujo.jotaro@joestar.com", null);
     }
@@ -233,10 +233,10 @@ public class HotelServiceImplTest
     @Test
     public void makeReservation_ReservationNotValidException_case2()
             throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException, DateNotValidException,
-            CardNotProvidedException, ProvinceNotValidException, HotelReservationNotValidException,
+            CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
             HotelNoRoomAvailableException
     {
-        exceptionRule.expect(HotelReservationNotValidException.class);
+        exceptionRule.expect(ReservationNotValidException.class);
 
         BookingDTO booking = BookingDTOFixture.withDefaults();
         booking.setPeople(null);
@@ -247,7 +247,7 @@ public class HotelServiceImplTest
     @Test
     public void makeReservation_CardNotProvidedException_case1()
             throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException, DateNotValidException,
-            CardNotProvidedException, ProvinceNotValidException, HotelReservationNotValidException,
+            CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
             HotelNoRoomAvailableException
     {
         exceptionRule.expect(CardNotProvidedException.class);

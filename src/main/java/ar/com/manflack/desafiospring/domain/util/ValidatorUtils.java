@@ -21,7 +21,7 @@ public class ValidatorUtils
             String availableSince, String availableUntil, String isReserved)
             throws HotelCodeNotValidException, HotelNameNotValidException, ProvinceNotValidException,
             HotelTypeNotValidException, HotelPriceNotValidException, DateNotValidException,
-            HotelReservationNotValidException
+            ReservationNotValidException
     {
         validateCode(code);
         validateName(name);
@@ -80,10 +80,10 @@ public class ValidatorUtils
 
     }
 
-    private static void validateIsReserved(String isReserved) throws HotelReservationNotValidException
+    private static void validateIsReserved(String isReserved) throws ReservationNotValidException
     {
         if (StringUtils.isBlank(isReserved) || !StringUtils.equalsAny(isReserved.toLowerCase(), "no", "si"))
-            throw new HotelReservationNotValidException();
+            throw new ReservationNotValidException();
     }
 
     public static void validateEmail(String emailStr) throws EmailNotValidException
@@ -93,7 +93,7 @@ public class ValidatorUtils
             throw new EmailNotValidException();
     }
 
-    public static void validateTypeRoom(String type, Integer amountOfPeople) throws HotelRoomTypeNotValidException
+    public static void validateRoomType(String type, Integer amountOfPeople) throws HotelRoomTypeNotValidException
     {
         RoomTypesEnum roomEnum = RoomTypesEnum.returnRoomTypeGivenAmountPeople(amountOfPeople);
 
@@ -110,7 +110,7 @@ public class ValidatorUtils
 
     }
 
-    private static void validateSeatType(String seatType) throws FlightSeatTypeNotValidException
+    public static void validateSeatType(String seatType) throws FlightSeatTypeNotValidException
     {
         if (StringUtils.isBlank(seatType) || !StringUtils.isAlpha(seatType)
                 || !StringUtils.equalsAnyIgnoreCase(seatType, "economy", "business"))

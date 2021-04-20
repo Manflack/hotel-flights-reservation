@@ -5,13 +5,13 @@ import java.util.List;
 
 import ar.com.manflack.desafiospring.app.dto.HotelDTO;
 import ar.com.manflack.desafiospring.app.dto.HotelDTOFixture;
-import ar.com.manflack.desafiospring.app.rest.request.ReservationRequestFixture;
-import ar.com.manflack.desafiospring.app.rest.response.ReservationResponse;
-import ar.com.manflack.desafiospring.app.rest.response.ReservationResponseFixture;
+import ar.com.manflack.desafiospring.app.rest.request.HotelReservationRequestFixture;
+import ar.com.manflack.desafiospring.app.rest.response.HotelReservationResponse;
+import ar.com.manflack.desafiospring.app.rest.response.HotelReservationResponseFixture;
 import ar.com.manflack.desafiospring.domain.exception.*;
 import ar.com.manflack.desafiospring.domain.exception.hotel.HotelNoRoomAvailableException;
-import ar.com.manflack.desafiospring.domain.exception.hotel.HotelReservationNotValidException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.HotelRoomTypeNotValidException;
+import ar.com.manflack.desafiospring.domain.exception.hotel.ReservationNotValidException;
 import ar.com.manflack.desafiospring.domain.service.impl.HotelServiceImpl;
 
 import static org.junit.Assert.*;
@@ -62,18 +62,18 @@ public class HotelControllerTest
     @Test
     public void makeReservation_defaultParams_OK()
             throws HotelRoomTypeNotValidException, EmailNotValidException, InvalidCardDuesException,
-            DateNotValidException, CardNotProvidedException, ProvinceNotValidException,
-            HotelReservationNotValidException, HotelNoRoomAvailableException
+            DateNotValidException, CardNotProvidedException, ProvinceNotValidException, ReservationNotValidException,
+            HotelNoRoomAvailableException
     {
-        when(service.makeReservation(any(), any())).thenReturn(ReservationResponseFixture.withDefaults());
+        when(service.makeReservation(any(), any())).thenReturn(HotelReservationResponseFixture.withDefaults());
 
-        ResponseEntity<?> response = controller.makeHotelReservation(ReservationRequestFixture.withDefaults());
+        ResponseEntity<?> response = controller.makeHotelReservation(HotelReservationRequestFixture.withDefaults());
         assertNotNull(response);
         assertNotNull(response.getBody());
 
-        ReservationResponse reservationResponse = (ReservationResponse) response.getBody();
-        assertNotNull(reservationResponse);
-        assertEquals(ReservationResponseFixture.withDefaults(), reservationResponse);
+        HotelReservationResponse hotelReservationResponse = (HotelReservationResponse) response.getBody();
+        assertNotNull(hotelReservationResponse);
+        assertEquals(HotelReservationResponseFixture.withDefaults(), hotelReservationResponse);
 
         verify(service, times(1)).makeReservation(any(), any());
     }

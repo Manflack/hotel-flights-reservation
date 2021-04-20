@@ -85,8 +85,7 @@ public class HotelRepository
         return storageData.stream()
                 .filter(hotel -> code.equals(hotel.getCode()) && destination.equals(hotel.getProvince())
                         && StringUtils.equalsIgnoreCase(type.toLowerCase(), hotel.getType().toLowerCase())
-                        && dateFrom.isAfter(hotel.getAvailableSince().minusDays(1))
-                        && dateTo.isBefore(hotel.getAvailableUntil().plusDays(1))
+                        && DateUtils.validateAvailabilityHotel(hotel, dateFrom, dateTo)
                         && isReserved.equals(hotel.getIsReserved()))
                 .findAny();
     }

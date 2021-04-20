@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ReservationRequest
+public class HotelReservationRequest
 {
     private String userName;
     private BookingDTO booking;

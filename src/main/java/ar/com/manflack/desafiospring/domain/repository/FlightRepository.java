@@ -2,8 +2,10 @@ package ar.com.manflack.desafiospring.domain.repository;
 
 import java.io.File;
 import java.io.FileReader;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.PostConstruct;
 
 import ar.com.manflack.desafiospring.app.dto.FlightDTO;
@@ -65,6 +67,21 @@ public class FlightRepository
 
             storageData.add(new FlightDTO(number, origin, destination, seatType, price, departureDate, returnDate));
         }
+    }
+
+    public Optional<FlightDTO> findByNumberAndOriginAndDestinationAndSeatTypeAndBetweenDepartureDateAndReturnDate(
+            String number, String origin, String destination, String seatType, LocalDate departureDate,
+            LocalDate returnDate)
+    {
+        return storageData.stream()
+                .filter(flight -> number.equalsIgnoreCase(flight.getNumber())
+                        && origin.equalsIgnoreCase(flight.getOrigin())
+                        && destination.equalsIgnoreCase(flight.getDestination())
+                        && seatType.equalsIgnoreCase(flight.getSeatType()) && DateUtils.validateAvailabilityFlight(
+                        flight,
+                        departureDate,
+                        returnDate))
+                .findAny();
     }
 
     public FlightDTO getByFlightNumberAndSeatType(String flightNumber, String seatType)

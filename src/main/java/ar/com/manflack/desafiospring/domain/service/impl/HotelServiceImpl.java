@@ -9,11 +9,11 @@ import java.util.stream.Stream;
 import ar.com.manflack.desafiospring.app.dto.CardDTO;
 import ar.com.manflack.desafiospring.app.dto.HotelDTO;
 import ar.com.manflack.desafiospring.app.enums.CardInterestEnum;
-import ar.com.manflack.desafiospring.app.rest.response.ReservationResponse;
+import ar.com.manflack.desafiospring.app.rest.response.HotelReservationResponse;
 import ar.com.manflack.desafiospring.app.dto.BookingDTO;
 import ar.com.manflack.desafiospring.domain.exception.*;
 import ar.com.manflack.desafiospring.domain.exception.hotel.HotelNoRoomAvailableException;
-import ar.com.manflack.desafiospring.domain.exception.hotel.HotelReservationNotValidException;
+import ar.com.manflack.desafiospring.domain.exception.hotel.ReservationNotValidException;
 import ar.com.manflack.desafiospring.domain.exception.hotel.HotelRoomTypeNotValidException;
 import ar.com.manflack.desafiospring.domain.repository.HotelRepository;
 import ar.com.manflack.desafiospring.domain.service.HotelService;
@@ -38,7 +38,7 @@ public class HotelServiceImpl implements HotelService
         List<HotelDTO> hotelList = hotelRepository.getAll();
 
         if (StringUtils.isNotBlank(destination))
-            validateDestinationInDatabaseAvoidCall(destination, hotelList);
+            validateDestinationInDatabase(destination, hotelList);
 
         // we'll prepare a stream of hotelDTO to be filtered given the case of any params is provided
         Stream<HotelDTO> hotelListFiltered = hotelList.stream();
@@ -76,38 +76,38 @@ public class HotelServiceImpl implements HotelService
     }
 
     @Override
-    public ReservationResponse makeReservation(String username, BookingDTO bookingDTO)
+    public HotelReservationResponse makeReservation(String username, BookingDTO booking)
             throws DateNotValidException, HotelNoRoomAvailableException, EmailNotValidException,
             InvalidCardDuesException, CardNotProvidedException, ProvinceNotValidException,
-            HotelReservationNotValidException, HotelRoomTypeNotValidException
+            HotelRoomTypeNotValidException, ReservationNotValidException
     {
         ValidatorUtils.validateEmail(username);
 
         // if the body has some content null, throw exception
-        if (bookingDTO == null || bookingDTO.getPeople() == null)
-            throw new HotelReservationNotValidException();
+        if (booking == null || booking.getPeople() == null)
+            throw new ReservationNotValidException();
 
-        if (bookingDTO.getPaymentMethod() == null)
+        if (booking.getPaymentMethod() == null)
             throw new CardNotProvidedException();
 
         // validate typeRoom given the name of the type and the amount of people
-        ValidatorUtils.validateTypeRoom(bookingDTO.getRoomType(), bookingDTO.getPeopleAmount());
+        ValidatorUtils.validateRoomType(booking.getRoomType(), booking.getPeopleAmount());
         // validate if dateFrom is before dateTo
-        DateUtils.validateSinceAndUntil(bookingDTO.getDateFrom(), bookingDTO.getDateTo());
-        // validate if the destination exists given the database
-        validateDestinationInDatabase(bookingDTO.getDestination());
+        DateUtils.validateSinceAndUntil(booking.getDateFrom(), booking.getDateTo());
+        // validate if the destination exists against database
+        validateDestinationInDatabase(booking.getDestination());
 
-        CardDTO paymentMethod = bookingDTO.getPaymentMethod();
+        CardDTO paymentMethod = booking.getPaymentMethod();
 
         // wrapper the dates
-        LocalDate dateFrom = DateUtils.getDateFromString(bookingDTO.getDateFrom());
-        LocalDate dateTo = DateUtils.getDateFromString(bookingDTO.getDateTo());
+        LocalDate dateFrom = DateUtils.getDateFromString(booking.getDateFrom());
+        LocalDate dateTo = DateUtils.getDateFromString(booking.getDateTo());
 
         // get by filter, simulation of a Repository with JPA
         Optional<HotelDTO> optionalHotel =
-                hotelRepository.findByCodeAndDestinationAndTypeAndBetweenDateFromAndDateToAndIsReserved(bookingDTO.getHotelCode(),
-                        bookingDTO.getDestination(),
-                        bookingDTO.getRoomType(),
+                hotelRepository.findByCodeAndDestinationAndTypeAndBetweenDateFromAndDateToAndIsReserved(booking.getHotelCode(),
+                        booking.getDestination(),
+                        booking.getRoomType(),
                         dateFrom,
                         dateTo,
                         false);
@@ -129,20 +129,17 @@ public class HotelServiceImpl implements HotelService
         double total = amount + (amount / 100 * interest);
 
         // the status code will being managed by controller
-        return new ReservationResponse(username, amount, interest, total, bookingDTO, null);
+        return new HotelReservationResponse(username, amount, interest, total, booking, null);
     }
 
     // check if any the String destination exists in any hotel
     private void validateDestinationInDatabase(String destination) throws ProvinceNotValidException
     {
-        List<HotelDTO> hotelList = hotelRepository.getAll();
-        long counter = hotelList.stream().filter(hotel -> hotel.getProvince().equals(destination)).count();
-        if (counter == 0)
-            throw new ProvinceNotValidException();
+        validateDestinationInDatabase(destination, hotelRepository.getAll());
     }
 
     // same that validateDestinationInDatabase, but this will be used by getAll to avoid double calls to the repository
-    private void validateDestinationInDatabaseAvoidCall(String destination, List<HotelDTO> hotelList)
+    private void validateDestinationInDatabase(String destination, List<HotelDTO> hotelList)
             throws ProvinceNotValidException
     {
         long counter = hotelList.stream().filter(hotel -> hotel.getProvince().equals(destination)).count();

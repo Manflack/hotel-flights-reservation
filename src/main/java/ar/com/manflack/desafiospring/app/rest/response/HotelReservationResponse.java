@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ReservationResponse
+public class HotelReservationResponse
 {
     private String userName;
     private Double amount;

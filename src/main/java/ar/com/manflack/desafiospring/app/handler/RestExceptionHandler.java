@@ -17,7 +17,7 @@ public class RestExceptionHandler
         StatusDTO response = new StatusDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
 
         if (ex instanceof HotelNoRoomAvailableException || ex instanceof DateNotValidException
-                || ex instanceof HotelReservationNotValidException || ex instanceof HotelTypeNotValidException
+                || ex instanceof ReservationNotValidException || ex instanceof HotelTypeNotValidException
                 || ex instanceof EmailNotValidException || ex instanceof CardNotProvidedException
                 || ex instanceof InvalidCardDuesException || ex instanceof HotelCodeNotValidException
                 || ex instanceof HotelDataErrorException || ex instanceof HotelNameNotValidException

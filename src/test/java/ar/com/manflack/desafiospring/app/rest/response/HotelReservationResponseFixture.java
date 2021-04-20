@@ -5,7 +5,7 @@ import ar.com.manflack.desafiospring.app.dto.BookingDTOFixture;
 import ar.com.manflack.desafiospring.app.dto.StatusDTO;
 import ar.com.manflack.desafiospring.app.dto.StatusDTOFixture;
 
-public class ReservationResponseFixture
+public class HotelReservationResponseFixture
 {
     public static final String userName = "myTest@mail.com";
     public static final Double amount = 12300.0;
@@ -14,8 +14,8 @@ public class ReservationResponseFixture
     public static final BookingDTO booking = BookingDTOFixture.withDefaults();
     public static final StatusDTO statusCode = StatusDTOFixture.withDefaults();
 
-    public static ReservationResponse withDefaults()
+    public static HotelReservationResponse withDefaults()
     {
-        return new ReservationResponse(userName, amount, interest, total, booking, statusCode);
+        return new HotelReservationResponse(userName, amount, interest, total, booking, statusCode);
     }
 }
