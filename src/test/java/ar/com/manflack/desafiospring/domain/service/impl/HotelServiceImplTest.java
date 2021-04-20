@@ -1,4 +1,4 @@
-package ar.com.manflack.desafiospring.app.domain.service.impl;
+package ar.com.manflack.desafiospring.domain.service.impl;
 
 import java.util.Arrays;
 import java.util.Collections;

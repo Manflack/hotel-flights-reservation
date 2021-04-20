@@ -35,13 +35,16 @@ public class FlightRepository
     @PostConstruct
     private void setup() throws Exception
     {
+        // if a context wasn't provided, throw exception
         if (StringUtils.isBlank(PATH_DATABASE) || StringUtils.isBlank(FILENAME))
             throw new InvalidDatabaseSpecification();
 
+        // get array of array of string given the csv
         List<String[]> localData = readDatabase();
 
         for (int i = 1; i < localData.size(); i++)
         {
+            // wrap the data captured to string
             String[] data = localData.get(i);
 
             String number = data[0];
@@ -52,8 +55,10 @@ public class FlightRepository
             String departureDate = data[5];
             String returnDate = data[6];
 
+            // validate dates before push to the local database
             DateUtils.validateSinceAndUntil(departureDate, returnDate);
 
+            // validate fields before push
             ValidatorUtils.validateFlightWithStringData(number,
                     origin,
                     destination,
@@ -62,6 +67,7 @@ public class FlightRepository
                     departureDate,
                     returnDate);
 
+            // getByFlightNumberAndSeatType works like unique key
             if (getByFlightNumberAndSeatType(number, seatType) != null)
                 throw new FlightDataErrorException();
 

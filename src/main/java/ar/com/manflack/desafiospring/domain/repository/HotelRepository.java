@@ -36,13 +36,16 @@ public class HotelRepository
     @PostConstruct
     private void setup() throws Exception
     {
+        // if a context wasn't provided, throw exception
         if (StringUtils.isBlank(PATH_DATABASE) || StringUtils.isBlank(FILENAME))
             throw new InvalidDatabaseSpecification();
 
+        // get array of array of string given the csv
         List<String[]> localData = readDatabase();
 
         for (int i = 1; i < localData.size(); i++)
         {
+            // wrap the data captured to string
             String[] data = localData.get(i);
 
             String code = data[0];
@@ -54,8 +57,10 @@ public class HotelRepository
             String availableUntil = data[6];
             String isReserved = data[7];
 
+            // validate dates before push to the local database
             DateUtils.validateSinceAndUntil(availableSince, availableUntil);
 
+            // validate fields before push
             ValidatorUtils.validateHotelWithStringData(code,
                     name,
                     province,
@@ -65,6 +70,7 @@ public class HotelRepository
                     availableUntil,
                     isReserved);
 
+            // getByCode works like unique key
             if (getByCode(code) != null)
                 throw new HotelDataErrorException();
 
